@@ -1,0 +1,117 @@
+{% extends "base_customer.html" %}
+
+{% block title %}My Service Requests{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <h2>My Service Requests</h2>
+    
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Service</th>
+                    <th>Professional</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>#{{ booking.booking_id }}</td>
+                    <td>{{ booking.service.name }}</td>
+                    <td>{{ booking.service_request.professional.full_name if booking.service_request else 'Not Assigned' }}</td>
+                    <td>{{ booking.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ booking.time.strftime('%H:%M') }}</td>
+                    <td>
+                        <span class="badge bg-{{ 'success' if booking.status == 'completed' else 'warning' }}">
+                            {{ booking.status|title }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if booking.service_request.status.value == 'in_progress' %}
+                            <form method="POST" action="{{ url_for('auth.update_customer_request', request_id=booking.service_request.request_id) }}" 
+                                  class="d-inline">
+                                <input type="hidden" name="action" value="complete">
+                                <button type="submit" class="btn btn-sm btn-success" 
+                                        onclick="return confirm('Are you sure you want to mark this service as completed?')">
+                                    Complete Service
+                                </button>
+                            </form>
+                        {% elif booking.service_request.status.value == 'completed' and not booking.service_request.review %}
+                            <button type="button" class="btn btn-sm btn-primary" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#ratingModal{{ booking.booking_id }}">
+                                Rate Service
+                            </button>
+                            
+                            <!-- Rating Modal -->
+                            <div class="modal fade" id="ratingModal{{ booking.booking_id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Rate Your Service</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form method="POST" action="{{ url_for('auth.rate_service', request_id=booking.service_request.request_id) }}">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Rating</label>
+                                                    <div class="rating">
+                                                        {% for i in range(5, 0, -1) %}
+                                                        <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}_{{ booking.booking_id }}" required>
+                                                        <label for="star{{ i }}_{{ booking.booking_id }}">☆</label>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="comment" class="form-label">Comment (Optional)</label>
+                                                    <textarea class="form-control" name="comment" rows="3"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-primary">Submit Rating</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% elif booking.service_request.review %}
+                            <div class="rating-display">
+                                {% for _ in range(booking.service_request.review.rating) %}
+                                    <span class="star-filled">★</span>
+                                {% endfor %}
+                                {% for _ in range(5 - booking.service_request.review.rating) %}
+                                    <span class="star-empty">☆</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        {% if booking.status == 'pending' %}
+                            <form method="POST" action="{{ url_for('auth.cancel_booking', booking_id=booking.booking_id) }}" 
+                                  class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger" 
+                                        onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                    Cancel
+                                </button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You don't have any service requests yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

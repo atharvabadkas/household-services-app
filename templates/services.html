@@ -1,0 +1,36 @@
+{% extends "base_customer.html" %}
+
+{% block title %}All Services{% endblock %}
+
+{% block content %}
+    <!-- Services Section -->
+    <div class="container mt-5 pt-4">
+        <h2 class="mb-4">Service Categories</h2>
+        <div class="row">
+            {% for service in services %}
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100">
+                    <div class="card-body">
+                        <div class="service-icon mb-3">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h5 class="card-title">{{ service.name }}</h5>
+                        <p class="card-text">{{ service.description }}</p>
+                        <div class="service-details">
+                            <p class="mb-2">
+                                <i class="fas fa-clock"></i> 
+                                {{ service.estimated_time }} minutes
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-tag"></i> 
+                                ${{ "%.2f"|format(service.base_price) }}
+                            </p>
+                        </div>
+                        <a href="{{ url_for('auth.service_professionals', service_id=service.service_id) }}" class="btn btn-primary mt-3">View All Professionals</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %} 

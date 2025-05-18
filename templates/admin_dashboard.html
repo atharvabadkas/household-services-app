@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - HouseHelp.com{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Sidebar -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Admin Menu</h5>
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action active">Dashboard</a>
+                        <a href="{{ url_for('auth.manage_users') }}" class="list-group-item list-group-item-action">Manage Users</a>
+                        <a href="{{ url_for('auth.manage_services') }}" class="list-group-item list-group-item-action">Manage Services</a>
+                        <a href="{{ url_for('auth.admin_logout') }}" class="list-group-item list-group-item-action text-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <!-- Main Content -->
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Dashboard Overview</h2>
+                    
+                    <!-- Add Search Section -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <form method="GET" action="{{ url_for('auth.admin_dashboard') }}">
+                                <div class="row g-3 justify-content-left">
+                                    <div class="col-md-5">
+                                        <input type="text" class="form-control" name="search" placeholder="Search..." value="{{ request.args.get('search', '') }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" name="search_type">
+                                            <option value="requests" {% if request.args.get('search_type') == 'requests' %}selected{% endif %}>Service Requests</option>
+                                            <option value="professionals" {% if request.args.get('search_type') == 'professionals' %}selected{% endif %}>Service Professionals</option>
+                                            <option value="customers" {% if request.args.get('search_type') == 'customers' %}selected{% endif %}>Customers</option>
+                                            <option value="services" {% if request.args.get('search_type') == 'services' %}selected{% endif %}>Services</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-auto">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-primary text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Total Users</h5>
+                                    <h2 class="mb-0">{{ total_users }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Active Requests</h5>
+                                    <h2 class="mb-0">{{ active_requests }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-info text-white">
+                                <div class="card-body">
+                                    <h5 class="card-title">Professionals</h5>
+                                    <h2 class="mb-0">{{ total_professionals }}</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modified Recent Service Requests section -->
+                    <div class="card mt-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                {% if request.args.get('search_type') == 'professionals' %}
+                                    Service Professionals
+                                {% elif request.args.get('search_type') == 'customers' %}
+                                    Customers
+                                {% elif request.args.get('search_type') == 'services' %}
+                                    Services
+                                {% else %}
+                                    Recent Service Requests
+                                {% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                {% if request.args.get('search_type') == 'professionals' %}
+                                    <!-- Professionals Table -->
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Service</th>
+                                                <th>Experience</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for prof in professionals %}
+                                            <tr>
+                                                <td>{{ prof.full_name }}</td>
+                                                <td>{{ prof.service.name }}</td>
+                                                <td>{{ prof.experience_years }} years</td>
+                                                <td>
+                                                    <span class="badge {% if prof.user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                                        {{ 'Active' if prof.user.is_active else 'Blocked' }}
+                                                    </span>
+                                                    <span class="badge {% if prof.is_verified %}bg-success{% else %}bg-warning{% endif %} ms-1">
+                                                        {{ 'Verified' if prof.is_verified else 'Pending' }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <button class="btn btn-sm btn-primary me-2" data-bs-toggle="modal" data-bs-target="#viewDetailsModal{{ prof.professional_id }}">
+                                                            <i class="fas fa-eye"></i> View
+                                                        </button>
+                                                        <form action="{{ url_for('auth.toggle_user_status', user_type='professional', user_id=prof.professional_id) }}" method="POST">
+                                                            <button type="submit" class="btn btn-sm {% if prof.user.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                                                {% if prof.user.is_active %}
+                                                                    <i class="fas fa-ban"></i> Block
+                                                                {% else %}
+                                                                    <i class="fas fa-check"></i> Activate
+                                                                {% endif %}
+                                                            </button>
+                                                        </form>
+                                                    </div>
+
+                                                    <!-- Professional Details Modal -->
+                                                    <div class="modal fade" id="viewDetailsModal{{ prof.professional_id }}" tabindex="-1">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title">Professional Details</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p><strong>Name:</strong> {{ prof.full_name }}</p>
+                                                                    <p><strong>Email:</strong> {{ prof.user.email }}</p>
+                                                                    <p><strong>Phone:</strong> {{ prof.phone }}</p>
+                                                                    <p><strong>Service:</strong> {{ prof.service.name }}</p>
+                                                                    <p><strong>Experience:</strong> {{ prof.experience_years }} years</p>
+                                                                    <p><strong>Description:</strong> {{ prof.description or 'Not provided' }}</p>
+                                                                    {% if prof.document_url %}
+                                                                    <p><strong>Documents:</strong> 
+                                                                        <a href="{{ url_for('auth.view_document', filename=prof.document_url.split('/')[-1]) }}" 
+                                                                           target="_blank" class="btn btn-sm btn-info">
+                                                                            <i class="fas fa-file"></i> View Documents
+                                                                        </a>
+                                                                    </p>
+                                                                    {% endif %}
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% elif request.args.get('search_type') == 'customers' %}
+                                    <!-- Customers Table -->
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>Join Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for customer in customers %}
+                                            <tr>
+                                                <td>{{ customer.full_name }}</td>
+                                                <td>{{ customer.user.email }}</td>
+                                                <td>{{ customer.created_at.strftime('%Y-%m-%d') if customer.created_at else customer.user.created_at.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">View Details</button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% elif request.args.get('search_type') == 'services' %}
+                                    <!-- Services Table -->
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Service Name</th>
+                                                <th>Category</th>
+                                                <th>Base Price</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for service in services %}
+                                            <tr>
+                                                <td>{{ service.name }}</td>
+                                                <td>{{ service.category }}</td>
+                                                <td>${{ "%.2f"|format(service.base_price) }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if service.is_active else 'danger' }}">
+                                                        {{ 'Active' if service.is_active else 'Inactive' }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-primary">Edit</button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% else %}
+                                    <!-- Original Service Requests Table -->
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Service</th>
+                                                <th>Customer</th>
+                                                <th>Scheduled Date</th>
+                                                <th>Status</th>
+                                                <th>Price</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for request in service_requests %}
+                                            <tr>
+                                                <td>{{ request.service.name }}</td>
+                                                <td>{{ request.customer.full_name }}</td>
+                                                <td>{{ request.scheduled_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                                <td>
+                                                    <span class="badge bg-{{ 'success' if request.status.value == 'completed' 
+                                                                        else 'warning' if request.status.value == 'in_progress' 
+                                                                        else 'danger' if request.status.value == 'cancelled' 
+                                                                        else 'primary' }}">
+                                                        {{ request.status.value }}
+                                                    </span>
+                                                </td>
+                                                <td>${{ "%.2f"|format(request.price) }}</td>
+                                                <td>
+                                                    {% if request.status.value == 'requested' %}
+                                                    <form action="{{ url_for('auth.update_request_status', request_id=request.request_id) }}" method="POST" class="d-inline">
+                                                        <input type="hidden" name="status" value="approved">
+                                                        <button type="submit" class="btn btn-sm btn-success me-2">Accept</button>
+                                                    </form>
+                                                    <form action="{{ url_for('auth.update_request_status', request_id=request.request_id) }}" method="POST" class="d-inline">
+                                                        <input type="hidden" name="status" value="rejected">
+                                                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                                    </form>
+                                                    {% elif request.status.value == 'admin_approved' %}
+                                                    <a href="{{ url_for('auth.assign_professional_to_request', request_id=request.request_id) }}" 
+                                                       class="btn btn-sm btn-primary">
+                                                        Assign Professional
+                                                    </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

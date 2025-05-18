@@ -1,0 +1,95 @@
+{% extends "base_customer.html" %}
+
+{% block title %}Customer Home{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <!-- Welcome Section -->
+    <section class="welcome-section mb-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="mb-4">Welcome to <span>HouseHelp.com!</span></h2>
+                <p class="mb-4">We're here to help you manage your home services efficiently. Here's how to get started:</p>
+                
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="quick-guide">
+                            <h5><i class="fas fa-search me-2" style="color: #198754;"></i>Browse Services</h5>
+                            <p>Visit the <a href="{{ url_for('auth.services') }}">Services</a> page to explore our available services and their details.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="quick-guide">
+                            <h5><i class="fas fa-calendar-check me-2" style="color: #198754;"></i>Track Bookings</h5>
+                            <p>Check your <a href="{{ url_for('auth.bookings') }}">Bookings</a> page to view and manage your service appointments.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="quick-guide">
+                            <h5><i class="fas fa-clock me-2" style="color: #198754;"></i>Quick Request</h5>
+                            <p>Use the form below to quickly request a service at your preferred time and location.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <div class="quick-guide">
+                            <h5><i class="fas fa-user me-2" style="color: #198754;"></i>Profile Management</h5>
+                            <p>Update your details and preferences in your <a href="#profile">Profile</a> section.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Request Services Section -->
+    <section>
+        <h2 class="mb-4">Request for Services</h2>
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('auth.request_service') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="service_type" class="form-label">Service Type</label>
+                            <select class="form-select" id="service_type" name="service_type" required>
+                                <option value="">Select a service...</option>
+                                {% for service in services %}
+                                <option value="{{ service.service_id }}">{{ service.name }} - ${{ "%.2f"|format(service.base_price) }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="preferred_date" class="form-label">Preferred Date</label>
+                            <input type="date" class="form-control" id="preferred_date" name="preferred_date" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="preferred_time" class="form-label">Preferred Time</label>
+                            <input type="time" class="form-control" id="preferred_time" name="preferred_time" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Service Location</label>
+                            <input type="text" class="form-control" id="location" name="location" placeholder="Enter your address" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Additional Details</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Please provide any additional details or specific requirements"></textarea>
+                    </div>
+                    <div class="submit-button-wrapper">
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock %} 

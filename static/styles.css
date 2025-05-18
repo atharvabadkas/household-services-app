@@ -1,0 +1,436 @@
+/* Global styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    color: #000000;
+    padding-top: 76px;
+}
+
+/* Main section styles for landing page */
+.main-section {
+    min-height: calc(100vh - 76px);
+    display: flex;
+    align-items: center;
+}
+
+/* Button styles - update margins */
+.btn, .btn-primary {
+    transition: all 0.3s ease;
+    margin: 5px;
+    border-radius: 5px;
+    background-color: #198754 !important;
+    color: #ffffff !important;
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    text-decoration: none;
+    padding: 8px 20px;
+}
+
+.btn:focus,
+.btn:active,
+.btn-primary:focus,
+.btn-primary:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    text-decoration: none;
+}
+
+.btn:hover, .btn-primary:hover {
+    background-color: #146c43 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: none !important;
+    text-decoration: none;
+}
+
+/* Card styles for login and registration */
+.card {
+    background-color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Form container styles */
+.login-container, .register-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Form input styles */
+input, textarea {
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+label {
+    margin-bottom: 5px;
+    text-align: left;
+    display: block;
+}
+
+/* Alert styles */
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Navbar styles */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background-color: #ffffff;
+    padding: 1rem !important;
+    box-shadow: none;
+}
+
+.navbar .navbar-brand {
+    font-size: 1.5rem;
+    color: #198754;
+    text-decoration: none;
+}
+
+.navbar .navbar-brand:hover {
+    text-decoration: none;
+}
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+}
+
+.navbar-nav .nav-item {
+    margin-right: 20px;
+}
+
+.navbar-nav .nav-link {
+    text-decoration: none;
+    color: #198754;
+    transition: color 0.3s;
+    padding: 0.25rem 1rem !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #146c43;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-nav .nav-item {
+        margin-right: 10px;
+    }
+}
+
+/* Footer styles */
+footer {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+footer h5 {
+    color: #198754;
+}
+
+footer p {
+    color: #f8f9fa;
+}
+
+/* Additional styles for consistency */
+h2 {
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    padding: 10px;
+    background-color: #198754;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #146c43;
+    transform: translateY(-2px);
+}
+
+a {
+    color: #198754;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.btn, .quick-guide h5 i {
+    color: #198754;
+}
+
+.quick-guide h5 i {
+    color: #198754;
+}
+
+/* Search form styles */
+.search-form {
+    width: 400px;
+    margin: 0;
+}
+
+.search-form .input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.search-form .form-control {
+    border-radius: 4px 0 0 4px;
+    height: 40px;
+    font-size: 16px;
+    border-right: none;
+}
+
+.search-form .search-btn {
+    border-radius: 0 4px 4px 0;
+    padding: 0 20px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #198754 !important;
+    color: white !important;
+    border: none;
+    margin: 0;
+    font-size: 16px;
+}
+
+.search-form .search-btn:hover {
+    background-color: #146c43 !important;
+    transform: none;
+}
+
+.search-form .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+/* Search bar styles */
+.input-group .form-control {
+    border-right: 0;
+    padding: 0.375rem 0.75rem;
+    height: 38px;
+}
+
+.input-group .search-btn {
+    margin: 0;
+    padding: 0.375rem 0.75rem;
+    background-color: white !important;
+    border: 1px solid #ced4da;
+    border-left: 0;
+    color: #198754 !important;
+    height: 38px;
+}
+
+.input-group .search-btn:hover {
+    background-color: white !important;
+    color: #146c43 !important;
+    transform: none;
+    box-shadow: none;
+}
+
+.input-group .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da;
+}
+
+.input-group .form-control:focus + .search-btn {
+    border-color: #ced4da;
+}
+
+/* Make sure the search icon is properly sized */
+.search-btn i {
+    font-size: 1rem;
+}
+
+/* Style the select dropdown to match search bar height */
+.form-select {
+    height: 38px;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+}
+
+/* Search section styles */
+.form-control, .form-select, .btn {
+    height: 38px;
+}
+
+/* Remove any margin from the search button */
+.col-auto .btn {
+    margin: 0;
+}
+
+/* Landing page specific button styles */
+.main-section .btn-lg {
+    padding: 15px 40px;
+    margin: 10px 15px;
+    font-size: 1.2rem;
+    min-width: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+}
+
+/* Update gap between buttons */
+.d-flex.justify-content-center.gap-3 {
+    margin-top: 30px;
+}
+
+/* Specific hover effect for landing page buttons */
+.main-section .btn-lg:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Search results styles */
+.search-highlight {
+    background-color: #ffd700;
+    padding: 0 2px;
+}
+
+.service-card {
+    transition: transform 0.2s;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.service-icon {
+    font-size: 2rem;
+    color: #198754;
+}
+
+/* Improve search input styles */
+.search-form .form-control:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+/* Rating styles */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    cursor: pointer;
+    font-size: 30px;
+    color: #ddd;
+    padding: 0 2px;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #ffd700;
+}
+
+.rating input:checked + label:hover,
+.rating input:checked ~ label:hover,
+.rating label:hover ~ input:checked ~ label,
+.rating input:checked ~ label:hover ~ label {
+    color: #ffc107;
+}
+
+/* Rating display styles */
+.rating-display {
+    font-size: 24px;
+    color: #ffd700;
+}
+
+.star-filled {
+    color: #ffd700;
+}
+
+.star-empty {
+    color: #ddd;
+}
+
+.review-comment {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Status badge colors */
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.badge.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+/* Modal styles */
+.modal-content {
+    border-radius: 8px;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}

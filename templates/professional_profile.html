@@ -1,0 +1,157 @@
+{% extends "base_professional.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0">My Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <a href="{{ url_for('auth.edit_professional_profile') }}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="profile-section">
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Personal Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Full Name</label>
+                                    <p class="form-control-static">{{ professional.full_name }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Email</label>
+                                    <p class="form-control-static">{{ professional.user.email }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Phone Number</label>
+                                    <p class="form-control-static">{{ professional.phone }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Experience</label>
+                                    <p class="form-control-static">{{ professional.experience_years }} years</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Professional Details -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Professional Details</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Service Category</label>
+                                    <p class="form-control-static">{{ professional.service.name }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Verification Status</label>
+                                    <p class="form-control-static">
+                                        <span class="badge bg-{{ 'success' if professional.is_verified else 'warning' }}">
+                                            {{ 'Verified' if professional.is_verified else 'Pending Verification' }}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Average Rating</label>
+                                    <p class="form-control-static">
+                                        {% if professional.average_rating %}
+                                            {{ "%.1f"|format(professional.average_rating) }} / 5.0
+                                        {% else %}
+                                            No ratings yet
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                {% if professional.description %}
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label text-muted">Description</label>
+                                    <p class="form-control-static">{{ professional.description }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Account Statistics -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Account Statistics</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-2">{{ total_services }}</h3>
+                                            <p class="mb-0 text-muted">Total Services</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-2">{{ active_services }}</h3>
+                                            <p class="mb-0 text-muted">Active Services</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-2">{{ completed_services }}</h3>
+                                            <p class="mb-0 text-muted">Completed Services</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Recent Activity</h5>
+                            {% if recent_services %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>Service</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for service in recent_services %}
+                                        <tr>
+                                            <td>{{ service.customer.full_name }}</td>
+                                            <td>{{ service.service.name }}</td>
+                                            <td>{{ service.scheduled_date.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if service.status.value == 'completed' else 'warning' }}">
+                                                    {{ service.status.value|title }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">No recent activity</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

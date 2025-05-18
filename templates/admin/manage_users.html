@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Admin Menu</h5>
+                    <div class="list-group">
+                        <a href="{{ url_for('auth.admin_dashboard') }}" class="list-group-item list-group-item-action">Dashboard</a>
+                        <a href="{{ url_for('auth.manage_users') }}" class="list-group-item list-group-item-action active">Manage Users</a>
+                        <a href="{{ url_for('auth.manage_services') }}" class="list-group-item list-group-item-action">Manage Services</a>
+                        <a href="{{ url_for('auth.admin_logout') }}" class="list-group-item list-group-item-action text-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Service Professionals Section -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Professionals</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Service</th>
+                                    <th>Experience</th>
+                                    <th>Documents</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for professional in professionals %}
+                                <tr>
+                                    <td>{{ professional.full_name }}</td>
+                                    <td>{{ professional.user.email }}</td>
+                                    <td>{{ professional.phone }}</td>
+                                    <td>{{ professional.service.name }}</td>
+                                    <td>{{ professional.experience_years }} years</td>
+                                    <td>
+                                        {% if professional.document_url %}
+                                        <a href="{{ url_for('auth.view_document', filename=professional.document_url.split('/')[-1]) }}" 
+                                           target="_blank" class="btn btn-sm btn-info">
+                                            Documents
+                                        </a>
+                                        {% else %}
+                                        No documents
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="badge {% if professional.user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ 'Active' if professional.user.is_active else 'Blocked' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if not professional.is_verified %}
+                                        <form method="POST" action="{{ url_for('auth.verify_professional', professional_id=professional.professional_id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success">Verify</button>
+                                        </form>
+                                        {% endif %}
+                                        <form action="{{ url_for('auth.toggle_user_status', user_type='professional', user_id=professional.professional_id) }}" 
+                                              method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm {% if professional.user.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                                {{ 'Block' if professional.user.is_active else 'Activate' }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Customers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for customer in customers %}
+                                <tr>
+                                    <td>{{ customer.full_name }}</td>
+                                    <td>{{ customer.user.email }}</td>
+                                    <td>{{ customer.phone }}</td>
+                                    <td>
+                                        <span class="badge {% if customer.user.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ 'Active' if customer.user.is_active else 'Blocked' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form action="{{ url_for('auth.toggle_user_status', user_type='customer', user_id=customer.customer_id) }}" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-sm {% if customer.user.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                                {{ 'Block' if customer.user.is_active else 'Activate' }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - HouseHelp.com{% endblock %}
+
+{% block navbar %}
+<!-- Landing Page Navbar -->
+<nav class="navbar navbar-expand-lg bg-white">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <span class="text-success fw-bold">HouseHelp.com</span>
+        </a>
+        <div class="d-flex">
+            <a href="{{ url_for('auth.admin_login') }}" class="btn btn-outline-success" style="border-radius: 5px;">Admin Login</a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Main Content Section -->
+<section class="main-section py-5" id="home">
+    <div class="container text-center">
+        <h1 class="display-4 mb-4">HouseHelp.com</h1>
+        <p class="lead mb-5">Get Professional and Reliable Services at Your Doorstep</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/customer/login" class="btn btn-success btn-lg px-5">Customer Login</a>
+            <a href="/professional/login" class="btn btn-success btn-lg px-5">Professional Login</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

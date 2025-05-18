@@ -1,0 +1,64 @@
+{% extends "base_customer.html" %}
+
+{% block title %}{{ service.name }} Professionals{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>{{ service.name }} Professionals</h2>
+            <p class="text-muted">Choose from our verified professionals</p>
+        </div>
+    </div>
+
+    {% if professionals %}
+    <div class="row">
+        {% for professional in professionals %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="professional-avatar me-3">
+                            <i class="fas fa-user-circle fa-3x text-secondary"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-1">{{ professional.full_name }}</h5>
+                            <div class="text-warning">
+                                {% for _ in range(professional.average_rating|int) %}
+                                <i class="fas fa-star"></i>
+                                {% endfor %}
+                                <span class="text-muted ms-1">({{ professional.average_rating }})</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class="card-text">
+                        <i class="fas fa-briefcase text-success me-2"></i>
+                        {{ professional.experience_years }} years experience
+                    </p>
+                    
+                    {% if professional.description %}
+                    <p class="card-text">{{ professional.description }}</p>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('auth.book_professional', professional_id=professional.professional_id) }}" 
+                       class="btn btn-primary mt-3">Book Professional</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        No professionals available for this service at the moment.
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function requestService(professionalId, serviceId) {
+    // Redirect to the service request form with pre-filled professional and service
+    window.location.href = "{{ url_for('auth.customer_home') }}?professional_id=" + professionalId + "&service_id=" + serviceId + "#request-form";
+}
+</script>
+{% endblock %} 

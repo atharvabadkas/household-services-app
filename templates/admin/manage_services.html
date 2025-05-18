@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Services - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Admin Menu</h5>
+                    <div class="list-group">
+                        <a href="{{ url_for('auth.admin_dashboard') }}" class="list-group-item list-group-item-action">Dashboard</a>
+                        <a href="{{ url_for('auth.manage_users') }}" class="list-group-item list-group-item-action">Manage Users</a>
+                        <a href="{{ url_for('auth.manage_services') }}" class="list-group-item list-group-item-action active">Manage Services</a>
+                        <a href="{{ url_for('auth.admin_logout') }}" class="list-group-item list-group-item-action text-danger">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Services</h5>
+                    <a href="{{ url_for('auth.create_service') }}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Add New Service
+                    </a>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Base Price</th>
+                                    <th>Est. Time (min)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for service in services %}
+                                <tr>
+                                    <td>{{ service.name }}</td>
+                                    <td>${{ "%.2f"|format(service.base_price) }}</td>
+                                    <td>{{ service.estimated_time }}</td>
+                                    <td>
+                                        <span class="badge {% if service.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                            {{ 'Active' if service.is_active else 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('auth.edit_service', service_id=service.service_id) }}" 
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-sm btn-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal{{ service.service_id }}">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{ service.service_id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirm Delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                Are you sure you want to delete the service "{{ service.name }}"?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form action="{{ url_for('auth.delete_service', service_id=service.service_id) }}" method="POST" class="d-inline">
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

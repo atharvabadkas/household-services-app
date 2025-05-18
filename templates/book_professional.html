@@ -1,0 +1,58 @@
+{% extends "base_customer.html" %}
+
+{% block title %}Book Professional - {{ professional.full_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Book Professional Service</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Professional Info -->
+                    <div class="professional-info mb-4">
+                        <h5>Professional Details</h5>
+                        <p><strong>Name:</strong> {{ professional.full_name }}</p>
+                        <p><strong>Service:</strong> {{ professional.service.name }}</p>
+                        <p><strong>Base Price:</strong> ${{ "%.2f"|format(professional.service.base_price) }}</p>
+                    </div>
+
+                    <!-- Booking Form -->
+                    <form method="POST" action="{{ url_for('auth.create_booking', professional_id=professional.professional_id) }}">
+                        <div class="mb-3">
+                            <label for="booking_date" class="form-label">Select Date</label>
+                            <input type="date" class="form-control" id="booking_date" name="date" required 
+                                   min="{{ today_date }}" max="{{ max_date }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="booking_time" class="form-label">Select Time</label>
+                            <input type="time" class="form-control" id="booking_time" name="time" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Special Requirements/Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                    placeholder="Add any specific requirements or notes for the service professional"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Service Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="2" required
+                                    placeholder="Enter the address where the service should be performed"></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                            <a href="{{ url_for('auth.service_professionals', service_id=professional.service.service_id) }}" 
+                               class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

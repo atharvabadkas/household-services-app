@@ -1,0 +1,120 @@
+{% extends "base_customer.html" %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0">My Profile</h3>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <a href="{{ url_for('auth.edit_customer_profile') }}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </a>
+                    </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <div class="profile-section">
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Personal Information</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Full Name</label>
+                                    <p class="form-control-static">{{ customer.full_name }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Email</label>
+                                    <p class="form-control-static">{{ customer.user.email }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Phone Number</label>
+                                    <p class="form-control-static">{{ customer.phone }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label text-muted">Member Since</label>
+                                    <p class="form-control-static">{{ customer.created_at.strftime('%B %d, %Y') }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Statistics -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Account Statistics</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-2">{{ total_bookings }}</h3>
+                                            <p class="mb-0 text-muted">Total Bookings</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-2">{{ active_bookings }}</h3>
+                                            <p class="mb-0 text-muted">Active Bookings</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h3 class="mb-2">{{ completed_bookings }}</h3>
+                                            <p class="mb-0 text-muted">Completed Services</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="mb-4">
+                            <h5 class="text-success mb-3">Recent Activity</h5>
+                            {% if recent_bookings %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Service</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for booking in recent_bookings %}
+                                        <tr>
+                                            <td>{{ booking.service.name }}</td>
+                                            <td>{{ booking.date.strftime('%Y-%m-%d') }}</td>
+                                            <td>
+                                                <span class="badge bg-{{ 'success' if booking.status == 'completed' else 'warning' }}">
+                                                    {{ booking.status|title }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">No recent activity</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

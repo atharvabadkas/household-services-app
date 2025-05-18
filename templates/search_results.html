@@ -1,0 +1,74 @@
+{% extends "base_customer.html" %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <!-- Debug info -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row mb-4">
+        <div class="col">
+            {% if query %}
+                <h2>Search Results for "{{ query }}"</h2>
+                {% if services %}
+                    <p class="text-muted">Found {{ services|length }} result(s)</p>
+                {% endif %}
+            {% else %}
+                <h2>All Services</h2>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Debug info -->
+    {% if query %}
+        <div class="mb-4">
+            <p class="text-muted">Debug: Search query received: "{{ query }}"</p>
+        </div>
+    {% endif %}
+
+    {% if services %}
+        <div class="row">
+            {% for service in services %}
+            <div class="col-md-4 mb-4">
+                <div class="card service-card h-100">
+                    <div class="card-body">
+                        <div class="service-icon mb-3">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h5 class="card-title">{{ service.name }}</h5>
+                        <p class="card-text">{{ service.description }}</p>
+                        <div class="service-details">
+                            <p class="mb-2">
+                                <i class="fas fa-clock"></i> 
+                                {{ service.estimated_time }} minutes
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-tag"></i> 
+                                ${{ "%.2f"|format(service.base_price) }}
+                            </p>
+                        </div>
+                        <a href="{{ url_for('auth.service_professionals', service_id=service.service_id) }}" 
+                           class="btn btn-primary mt-3">View All Professionals</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            {% if query %}
+                No services found matching your search criteria "{{ query }}".
+            {% else %}
+                Please enter a search term to find services.
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

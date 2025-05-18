@@ -1,0 +1,82 @@
+{% extends "base_customer.html" %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">My Bookings</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% if bookings %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Service</th>
+                                <th>Professional</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>#{{ booking.booking_id }}</td>
+                                <td>{{ booking.service.name }}</td>
+                                <td>{{ booking.service_request.professional.full_name if booking.service_request and booking.service_request.professional else 'Not Assigned' }}</td>
+                                <td>{{ booking.date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ booking.time.strftime('%H:%M') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if booking.service_request and booking.service_request.status.value == 'completed' 
+                                                        else 'warning' if booking.service_request and booking.service_request.status.value == 'in_progress' 
+                                                        else 'info' }}">
+                                        {{ booking.service_request.status.value if booking.service_request else booking.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if booking.service_request and (booking.service_request.status.value == 'accepted' or booking.service_request.status.value == 'in_progress') %}
+                                        <form method="POST" action="{{ url_for('auth.close_service', request_id=booking.service_request.request_id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success" 
+                                                    onclick="return confirm('Are you sure you want to close this service?')">
+                                                Close Service
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    
+                                    {% if booking.status == 'pending' %}
+                                        <form method="POST" action="{{ url_for('auth.cancel_booking', booking_id=booking.booking_id) }}" 
+                                              class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger" 
+                                                    onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    You don't have any bookings yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

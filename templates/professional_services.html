@@ -1,0 +1,121 @@
+{% extends "base_professional.html" %}
+
+{% block content %}
+<div class="container mt-5 pt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Your Assigned Service Requests</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="card">
+                <div class="card-body">
+                    {% if service_requests %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Request ID</th>
+                                        <th>Customer</th>
+                                        <th>Service</th>
+                                        <th>Scheduled Date</th>
+                                        <th>Status</th>
+                                        <th>Address</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in service_requests %}
+                                    <tr>
+                                        <td>#{{ request.request_id }}</td>
+                                        <td>{{ request.customer.full_name }}</td>
+                                        <td>{{ request.service.name }}</td>
+                                        <td>{{ request.scheduled_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ 'success' if request.status.value == 'completed' 
+                                                                else 'warning' if request.status.value == 'in_progress' 
+                                                                else 'info' }}">
+                                                {{ request.status.value }}
+                                            </span>
+                                        </td>
+                                        <td>{{ request.customer_address }}</td>
+                                        <td>
+                                            {% if request.status.value == 'assigned' %}
+                                                <form method="POST" action="{{ url_for('auth.update_professional_request', request_id=request.request_id) }}" class="d-inline">
+                                                    <input type="hidden" name="action" value="accept">
+                                                    <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                                                </form>
+                                                <form method="POST" action="{{ url_for('auth.update_professional_request', request_id=request.request_id) }}" class="d-inline">
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                                </form>
+                                            {% elif request.status.value == 'in_progress' %}
+                                                <form method="POST" action="{{ url_for('auth.update_professional_request', request_id=request.request_id) }}" class="d-inline">
+                                                    <input type="hidden" name="action" value="complete">
+                                                    <button type="submit" class="btn btn-sm btn-success" 
+                                                            onclick="return confirm('Are you sure you want to mark this service as completed?')">
+                                                        Complete Service
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                            
+                                            {% if request.review %}
+                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" 
+                                                        data-bs-target="#reviewModal{{ request.request_id }}">
+                                                    View Rating
+                                                </button>
+                                                
+                                                <!-- Review Modal -->
+                                                <div class="modal fade" id="reviewModal{{ request.request_id }}" tabindex="-1">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Customer Review</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="rating-display mb-3">
+                                                                    {% for _ in range(request.review.rating) %}
+                                                                        <span class="star-filled">★</span>
+                                                                    {% endfor %}
+                                                                    {% for _ in range(5 - request.review.rating) %}
+                                                                        <span class="star-empty">☆</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                                {% if request.review.comment %}
+                                                                    <p class="review-comment">{{ request.review.comment }}</p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                            {% if request.status.value == 'accepted' or request.status.value == 'in_progress' %}
+                                                <form method="POST" action="{{ url_for('auth.close_service', request_id=request.request_id) }}" class="d-inline">
+                                                    <button type="submit" class="btn btn-sm btn-success" 
+                                                            onclick="return confirm('Are you sure you want to close this service?')">
+                                                        Close Service
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">No service requests assigned yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
